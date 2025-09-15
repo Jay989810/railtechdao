@@ -47,7 +47,79 @@
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
 
-      <a class="btn-getstarted" href="https://docs.google.com/forms/d/e/1FAIpQLSdlL3n3V6Tj2JjkELNN34PqkzvwWyRGG65o0MrQRZ93Ag_ARQ/viewform?usp=sf_link">Register</a>
+     <script src="https://unpkg.com/@supabase/supabase-js"></script>
+
+<button id="btn-getstarted">Register to Access E-Library</button>
+
+<div id="registrationForm" style="display:none; margin-top:20px;">
+  <h3>RailTech DAO Registration</h3>
+  <form id="studentForm">
+    <input type="text" id="fullName" placeholder="Full Name" required><br><br>
+    <input type="email" id="email" placeholder="Email" required><br><br>
+    <input type="text" id="institution" placeholder="Institution" required><br><br>
+    <input type="text" id="department" placeholder="Department/Program"><br><br>
+    <input type="text" id="studentId" placeholder="Student ID (Optional)"><br><br>
+    <input type="text" id="telegram" placeholder="Telegram Username"><br><br>
+    <input type="text" id="discord" placeholder="Discord Username"><br><br>
+    <select id="interest">
+      <option value="">-- Select Interest Area --</option>
+      <option>Research</option>
+      <option>Innovation</option>
+      <option>Project Development</option>
+      <option>Safety</option>
+      <option>Policy</option>
+    </select><br><br>
+    <label>
+      <input type="checkbox" id="consent" required> I agree to join RailTech DAO
+    </label><br><br>
+    <button type="submit">Submit</button>
+  </form>
+</div>
+
+<div id="libraryAccess" style="display:none; margin-top:20px;">
+  <h3>🎉 Registration Complete!</h3>
+  <p>Welcome to RailTech DAO. You can now access the E-Library:</p>
+  <a href="https://drive.google.com/drive/folders/YOUR_FOLDER_ID" target="_blank">
+    📚 Access Google Drive E-Library
+  </a>
+</div>
+
+<script>
+  // Supabase setup
+  const { createClient } = supabase;
+  const supabaseUrl = "https://ooxxampqveibgzonglxz.supabase.co";
+  const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9veHhhbXBxdmVpYmd6b25nbHh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc5NTUzNjYsImV4cCI6MjA3MzUzMTM2Nn0.9QrAmTBPiDbVuyLQbmdxwf-LCgDoxT8zmLzowTq7oKA";
+  const db = createClient(supabaseUrl, supabaseKey);
+
+  document.getElementById("registerBtn").addEventListener("click", () => {
+    document.getElementById("registrationForm").style.display = "block";
+  });
+
+  document.getElementById("studentForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const { error } = await db
+      .from("registrations")
+      .insert([{
+        full_name: document.getElementById("fullName").value,
+        email: document.getElementById("email").value,
+        institution: document.getElementById("institution").value,
+        department: document.getElementById("department").value,
+        student_id: document.getElementById("studentId").value,
+        telegram: document.getElementById("telegram").value,
+        discord: document.getElementById("discord").value,
+        wallet_address: document.getElementById("wallet").value,
+        interest_area: document.getElementById("interest").value,
+      }]);
+
+    if (error) {
+      alert("❌ Registration failed: " + error.message);
+    } else {
+      document.getElementById("registrationForm").style.display = "none";
+      document.getElementById("libraryAccess").style.display = "block";
+    }
+  });
+</script>
 
     </div>
   </header>
