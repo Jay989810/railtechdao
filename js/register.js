@@ -1,101 +1,66 @@
-// js/register.js
+const supabase = supabase.createClient("https://ooxxampqveibgzonglxz.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9veHhhbXBxdmVpYmd6b25nbHh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc5NTUzNjYsImV4cCI6MjA3MzUzMTM2Nn0.9QrAmTBPiDbVuyLQbmdxwf-LCgDoxT8zmLzowTq7oKA");
 
-// ---------- CONFIGURE THESE ----------
-const SUPABASE_URL = "https://ooxxampqveibgzonglxz.supabase.co"; 
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9veHhhbXBxdmVpYmd6b25nbHh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc5NTUzNjYsImV4cCI6MjA3MzUzMTM2Nn0.9QrAmTBPiDbVuyLQbmdxwf-LCgDoxT8zmLzowTq7oKA";
-// -------------------------------------
-
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-const form = document.getElementById("regForm");
-const message = document.getElementById("message");
-const libraryAccess = document.getElementById("libraryAccess");
-const submitBtn = document.getElementById("submitBtn");
-
-function showMessage(html, type = "info") {
-  message.innerHTML = `<div class="alert alert-${type}">${html}</div>`;
-}
-
-// Handle form submission
-form.addEventListener("submit", async (e) => {
+document.getElementById("regForm").addEventListener("submit", async (e) => {
   e.preventDefault();
-  submitBtn.disabled = true;
-  showMessage("Submitting... Please wait.", "info");
+  
+  const fullName = document.getElementById("fullName").value;
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  const institution = document.getElementById("institution").value;
+  const department = document.getElementById("department").value;
+  const role = document.getElementById("role").value;
+  const studentId = document.getElementById("studentId").value;
+  const telegram = document.getElementById("telegram").value;
+  const interest = document.getElementById("interest").value;
+  const idCardFile = document.getElementById("idCard").files[0];
 
-  // Collect values
-  const full_name = document.getElementById("fullName").value.trim();
-  const email = document.getElementById("email").value.trim().toLowerCase();
-  const institution = document.getElementById("institution").value.trim();
-  const department = document.getElementById("department").value.trim();
-  const student_id = document.getElementById("studentId").value.trim();
-  const telegram = document.getElementById("telegram").value.trim();
-  const wallet_address = document.getElementById("wallet")
-    ? document.getElementById("wallet").value.trim()
-    : "";
-  const interest_area = document.getElementById("interest").value;
-  const consent = document.getElementById("consent").checked;
+  // 1. Create user account with Supabase Auth
+  const { data, error } = await supabase.auth.signUp({
+    email: email,
+    password: password
+  });
 
-  // Validate required fields
-  if (!full_name || !email || !institution || !consent) {
-    showMessage(
-      "Please fill in Full Name, Email, Institution and accept the consent.",
-      "danger"
-    );
-    submitBtn.disabled = false;
+  if (error) {
+    document.getElementById("message").innerHTML = `<div class="alert alert-danger">${error.message}</div>`;
     return;
   }
 
-  try {
-    // ✅ 1. Check if user already exists by email
-    const { data: existing, error: checkError } = await supabaseClient
-      .from("registrations")
-      .select("id")
-      .eq("email", email)
-      .limit(1);
+  const user = data.user;
 
-    if (checkError) throw checkError;
+  // 2. Upload ID card
+  let idCardUrl = "";
+  if (idCardFile) {
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from("id-cards")  // make sure you created this bucket
+      .upload(`cards/${user.id}_${idCardFile.name}`, idCardFile, { upsert: true });
 
-    if (existing && existing.length > 0) {
-      showMessage(
-        "✅ You are already registered. Access to the library is below.",
-        "warning"
-      );
-      libraryAccess.style.display = "block";
-      submitBtn.disabled = false;
-      return;
+    if (uploadError) {
+      console.error("Upload error:", uploadError);
+    } else {
+      const { data: publicUrl } = supabase.storage.from("id-cards").getPublicUrl(uploadData.path);
+      idCardUrl = publicUrl.publicUrl;
     }
-
-    // ✅ 2. Insert new record
-    const { data, error: insertError } = await supabaseClient
-      .from("registrations")
-      .insert([
-        {
-          full_name,
-          email,
-          institution,
-          department,
-          student_id,
-          telegram,
-          wallet_address,
-          interest_area,
-          consent,
-          created_at: new Date().toISOString(), // optional: timestamp
-        },
-      ])
-      .select();
-
-    if (insertError) throw insertError;
-
-    // ✅ Success
-    showMessage(
-      "🎉 Registration successful. You can now open the E-Library below.",
-      "success"
-    );
-    libraryAccess.style.display = "block";
-  } catch (err) {
-    console.error("Supabase error:", err);
-    showMessage("❌ Registration failed: " + err.message, "danger");
-  } finally {
-    submitBtn.disabled = false;
   }
+
+  // 3. Save user profile
+  const { error: profileError } = await supabase.from("profiles").insert([{
+    id: user.id,
+    full_name: fullName,
+    institution,
+    department,
+    role,
+    student_id: studentId,
+    telegram,
+    interest,
+    id_card_url: idCardUrl
+  }]);
+
+  if (profileError) {
+    console.error(profileError);
+  }
+
+  document.getElementById("message").innerHTML = `
+    <div class="alert alert-success">
+      Registration successful! Please check your email to verify your account before logging in.
+    </div>`;
 });
