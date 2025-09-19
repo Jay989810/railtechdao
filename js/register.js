@@ -1,52 +1,66 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RailTech DAO Login</title>
-</head>
-<body>
-  <h2>Login to RailTech DAO</h2>
+// Supabase credentials
+const supabaseUrl = "https://ooxxampqveibgzonglxz.supabase.co";
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9veHhhbXBxdmVpYmd6b25nbHh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc5NTUzNjYsImV4cCI6MjA3MzUzMTM2Nn0.9QrAmTBPiDbVuyLQbmdxwf-LCgDoxT8zmLzowTq7oKA";
+const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-  <form id="loginForm">
-    <input id="loginEmail" type="email" placeholder="Email" required>
-    <input id="loginPassword" type="password" placeholder="Password" required>
-    <button id="loginBtn" type="submit"
-      class="g-recaptcha"
-      data-sitekey="6LcnXc4rAAAAAAM_oR9XZ_01R6QwBM18AGf33fhD"
-      data-callback="onSubmit"
-      data-action="login">
-      Login
-    </button>
-  </form>
+document.getElementById("regForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-  <!-- Load reCAPTCHA v3 API -->
-  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+  // reCAPTCHA check
+  const captchaResponse = grecaptcha.getResponse();
+  if (!captchaResponse) {
+    alert("⚠️ Please complete the CAPTCHA.");
+    return;
+  }
 
-  <!-- Supabase setup (replace with your details) -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-  <script>
-    const supabaseUrl = "https://ooxxampqveibgzonglxz.supabase.co";
-    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9veHhhbXBxdmVpYmd6b25nbHh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc5NTUzNjYsImV4cCI6MjA3MzUzMTM2Nn0.9QrAmTBPiDbVuyLQbmdxwf-LCgDoxT8zmLzowTq7oKA";
-    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+  // Collect form values
+  const fullName = document.getElementById("fullName").value;
+  const email = document.getElementById("email").value;
+  const institution = document.getElementById("institution").value;
+  const department = document.getElementById("department").value;
+  const role = document.getElementById("role").value;
+  const studentId = document.getElementById("studentId").value;
+  const telegram = document.getElementById("telegram").value;
+  const interest = document.getElementById("interest").value;
+  const consent = document.getElementById("consent").checked;
 
-    // reCAPTCHA callback
-    async function onSubmit(token) {
-      const email = document.getElementById("loginEmail").value;
-      const password = document.getElementById("loginPassword").value;
+  const idCardFile = document.getElementById("idCard").files[0];
+  if (!idCardFile) {
+    alert("⚠️ Please upload your ID card.");
+    return;
+  }
 
-      // Proceed with Supabase login only if captcha succeeds
-      if (token) {
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) {
-          alert(error.message);
-        } else {
-          window.location.href = "dashboard.html"; // redirect after login
-        }
-      } else {
-        alert("Captcha verification failed, please try again.");
-      }
-    }
-  </script>
-</body>
-</html>
+  try {
+    // 1. Upload ID card image to Supabase Storage
+    const filePath = `id_cards/${Date.now()}_${idCardFile.name}`;
+    let { data: storageData, error: storageError } = await supabaseClient.storage
+      .from("railtech-storage")
+      .upload(filePath, idCardFile);
+
+    if (storageError) throw storageError;
+
+    // 2. Get public URL of uploaded file
+    const { data: publicUrlData } = supabaseClient.storage
+      .from("railtech-storage")
+      .getPublicUrl(filePath);
+
+    const idCardUrl = publicUrlData.publicUrl;
+
+    // 3. Save registration details in Supabase table
+    const { data, error } = await supabaseClient
+      .from("registrations")
+      .insert([
+        { fullName, email, institution, department, role, studentId, telegram, interest, consent, idCardUrl }
+      ]);
+
+    if (error) throw error;
+
+    // 4. Show success message
+    document.getElementById("regForm").style.display = "none";
+    document.getElementById("libraryAccess").style.display = "block";
+
+  } catch (err) {
+    alert("❌ Error: " + err.message);
+    console.error(err);
+  }
+});
