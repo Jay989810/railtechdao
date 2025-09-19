@@ -3,20 +3,20 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>RailTech DAO E-Library</title>
+  <title>RailTech DAO E-Library | Register</title>
 
-  <!-- Bootstrap (CDN for simplicity) -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-  <!-- optional: your main css -->
   <link href="css/main.css" rel="stylesheet">
+
+  <!-- reCAPTCHA -->
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body class="bg-light">
 
   <nav class="navbar navbar-light bg-white shadow-sm">
     <div class="container">
       <a class="navbar-brand" href="index.html">RailTech DAO</a>
-       <img src="logo.png" alt="RailTech DAO Logo" width="40" height="40" class="me-2">
+      <img src="logo.png" alt="RailTech DAO Logo" width="40" height="40" class="me-2">
     </div>
   </nav>
 
@@ -24,11 +24,11 @@
     <div class="row justify-content-center">
       <div class="col-lg-7">
         <div class="card p-4">
-          <h3 class="mb-3">Register to access the E-Library</h3>
+          <h3 class="mb-3">Register for E-Library Access</h3>
 
           <div id="message"></div>
 
-          <form id="regForm" class="needs-validation" novalidate>
+          <form id="regForm" novalidate>
             <div class="mb-3">
               <label class="form-label">Full name</label>
               <input id="fullName" class="form-control" required>
@@ -40,27 +40,43 @@
             </div>
 
             <div class="mb-3">
-              <label class="form-label">Institution / School</label>
+              <label class="form-label">Password</label>
+              <input id="password" type="password" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Institution</label>
               <input id="institution" class="form-control" required>
             </div>
 
             <div class="mb-3">
-              <label class="form-label">Department / Program</label>
+              <label class="form-label">Department</label>
               <input id="department" class="form-control">
             </div>
 
             <div class="mb-3">
-              <label class="form-label">Student ID (optional)</label>
+              <label class="form-label">Role</label>
+              <select id="role" class="form-select" required>
+                <option value="">Select role</option>
+                <option value="student">Student</option>
+                <option value="lecturer">Lecturer</option>
+                <option value="staff">Staff</option>
+                <option value="alumni">Alumni</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Student/Staff ID (optional)</label>
               <input id="studentId" class="form-control">
             </div>
 
             <div class="mb-3">
               <label class="form-label">Telegram or Discord (optional)</label>
-              <input id="telegram" class="form-control" placeholder="e.g. @railtech_jp or jp#1234">
+              <input id="telegram" class="form-control" placeholder="@username">
             </div>
 
             <div class="mb-3">
-              <label class="form-label">Interest area</label>
+              <label class="form-label">Interest Area</label>
               <select id="interest" class="form-select">
                 <option value="">Select interest</option>
                 <option>Research</option>
@@ -71,32 +87,29 @@
               </select>
             </div>
 
+            <div class="mb-3">
+              <label class="form-label">Upload ID Card</label>
+              <input id="idCard" type="file" class="form-control" accept="image/*" required>
+            </div>
+
+            <div class="mb-3">
+              <div class="g-recaptcha" data-sitekey="6Lc6Ws4rAAAAABMuBMdsrt0eegJ6UudYIhiBosZ-"></div>
+            </div>
+
             <div class="mb-3 form-check">
               <input id="consent" type="checkbox" class="form-check-input" required>
               <label class="form-check-label">I agree to join RailTech DAO and receive updates.</label>
             </div>
 
-            <button id="submitBtn" class="btn btn-primary">Submit & Get Access</button>
+            <button id="submitBtn" class="btn btn-primary">Register</button>
           </form>
-
-          <!-- revealed after success -->
-          <div id="libraryAccess" class="mt-4" style="display:none">
-            <div class="alert alert-success">
-              Registration successful — click below to open the e-library.
-            </div>
-            <a id="driveLink" class="btn btn-outline-primary" target="_blank" href="https://drive.google.com/drive/folders/1-0UUvAHiF6z7BbTZBdG_7V_zzXvWcCY6">
-              Open E-Library
-            </a>
-          </div>
 
         </div>
       </div>
     </div>
   </main>
 
-  <!-- Supabase client (UMD) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
-  <!-- Your JS (create js/register.js) -->
   <script src="js/register.js"></script>
 </body>
 </html>
