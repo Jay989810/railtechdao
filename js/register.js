@@ -34,14 +34,14 @@ document.getElementById("regForm").addEventListener("submit", async (e) => {
     // 1. Upload ID card image to Supabase Storage
     const filePath = `id_cards/${Date.now()}_${idCardFile.name}`;
     let { data: storageData, error: storageError } = await supabaseClient.storage
-      .from("railtech-storage")
+      .from("id-cards")
       .upload(filePath, idCardFile);
 
     if (storageError) throw storageError;
 
     // 2. Get public URL of uploaded file
     const { data: publicUrlData } = supabaseClient.storage
-      .from("railtech-storage")
+      .from("id-cards")
       .getPublicUrl(filePath);
 
     const idCardUrl = publicUrlData.publicUrl;
