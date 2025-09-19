@@ -26,8 +26,8 @@
   <!-- Supabase setup (replace with your details) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <script>
-    const supabaseUrl = "YOUR_SUPABASE_URL";
-    const supabaseKey = "YOUR_SUPABASE_ANON_KEY";
+    const supabaseUrl = "https://ooxxampqveibgzonglxz.supabase.co";
+    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9veHhhbXBxdmVpYmd6b25nbHh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc5NTUzNjYsImV4cCI6MjA3MzUzMTM2Nn0.9QrAmTBPiDbVuyLQbmdxwf-LCgDoxT8zmLzowTq7oKA";
     const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
     // reCAPTCHA callback
