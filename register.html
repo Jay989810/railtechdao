@@ -28,7 +28,7 @@
           <div id="message"></div>
 
           <!-- Registration Form -->
-          <form id="regForm" class="needs-validation" novalidate>
+          <form id="regForm">
             <div class="mb-3">
               <label class="form-label">Full Name</label>
               <input id="fullName" class="form-control" required>
@@ -65,7 +65,7 @@
             </div>
 
             <div class="mb-3">
-              <label class="form-label">Upload ID Card (Student/Lecturer/Staff)</label>
+              <label class="form-label">Upload ID Card</label>
               <input id="idCard" type="file" class="form-control" accept="image/*" required>
             </div>
 
@@ -117,12 +117,12 @@
   </main>
 
   <!-- Supabase client -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <!-- reCAPTCHA API -->
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
-  <!-- Your JS -->
+  <!-- External JS -->
   <script src="js/register.js"></script>
 </body>
 </html>
