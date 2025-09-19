@@ -1,21 +1,92 @@
-<form id="loginForm">
-  <input id="loginEmail" type="email" placeholder="Email" required>
-  <input id="loginPassword" type="password" placeholder="Password" required>
-  <button type="submit">Login</button>
-</form>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Login — RailTech DAO</title>
 
-<script>
-document.getElementById("loginForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const email = document.getElementById("loginEmail").value;
-  const password = document.getElementById("loginPassword").value;
+  <!-- Bootstrap (CDN for simplicity) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-  
-  if (error) {
-    alert(error.message);
-  } else {
-    window.location.href = "dashboard.html"; // user goes to e-library dashboard
-  }
-});
-</script>
+  <!-- optional: your main css -->
+  <link href="css/main.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-light bg-white shadow-sm">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">RailTech DAO</a>
+      <img src="logo.png" alt="RailTech DAO Logo" width="40" height="40" class="me-2">
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <main class="container my-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-5">
+        <div class="card p-4 shadow">
+          <h3 class="mb-3">Login to RailTech DAO E-Library</h3>
+
+          <div id="message"></div>
+
+          <form id="loginForm" novalidate>
+            <div class="mb-3">
+              <label class="form-label">Email</label>
+              <input id="loginEmail" type="email" class="form-control" placeholder="Enter your email" required>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Password</label>
+              <input id="loginPassword" type="password" class="form-control" placeholder="Enter your password" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Login</button>
+          </form>
+
+          <div class="mt-3 text-center">
+            <small>Don’t have an account? <a href="register.html">Register here</a></small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Supabase client (UMD) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.min.js"></script>
+
+  <!-- Login Script -->
+  <script>
+    // 🔑 Supabase credentials (replace with your actual values)
+    const SUPABASE_URL = "https://ooxxampqveibgzonglxz.supabase.co";
+    const SUPABASE_ANON_KEY = "YOUR_ANON_KEY";
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const form = document.getElementById("loginForm");
+    const message = document.getElementById("message");
+
+    function showMessage(html, type='info') {
+      message.innerHTML = `<div class="alert alert-${type}">${html}</div>`;
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("loginEmail").value.trim();
+      const password = document.getElementById("loginPassword").value.trim();
+
+      showMessage("Logging in... Please wait.", "info");
+
+      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+      if (error) {
+        showMessage(error.message, "danger");
+      } else {
+        showMessage("Login successful! Redirecting...", "success");
+        setTimeout(() => {
+          window.location.href = "dashboard.html"; // redirect to E-Library dashboard
+        }, 1500);
+      }
+    });
+  </script>
+</body>
+</html>
