@@ -1,66 +1,52 @@
-const supabase = supabase.createClient("https://ooxxampqveibgzonglxz.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9veHhhbXBxdmVpYmd6b25nbHh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc5NTUzNjYsImV4cCI6MjA3MzUzMTM2Nn0.9QrAmTBPiDbVuyLQbmdxwf-LCgDoxT8zmLzowTq7oKA");
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RailTech DAO Login</title>
+</head>
+<body>
+  <h2>Login to RailTech DAO</h2>
 
-document.getElementById("regForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  
-  const fullName = document.getElementById("fullName").value;
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-  const institution = document.getElementById("institution").value;
-  const department = document.getElementById("department").value;
-  const role = document.getElementById("role").value;
-  const studentId = document.getElementById("studentId").value;
-  const telegram = document.getElementById("telegram").value;
-  const interest = document.getElementById("interest").value;
-  const idCardFile = document.getElementById("idCard").files[0];
+  <form id="loginForm">
+    <input id="loginEmail" type="email" placeholder="Email" required>
+    <input id="loginPassword" type="password" placeholder="Password" required>
+    <button id="loginBtn" type="submit"
+      class="g-recaptcha"
+      data-sitekey="6LcnXc4rAAAAAAM_oR9XZ_01R6QwBM18AGf33fhD"
+      data-callback="onSubmit"
+      data-action="login">
+      Login
+    </button>
+  </form>
 
-  // 1. Create user account with Supabase Auth
-  const { data, error } = await supabase.auth.signUp({
-    email: email,
-    password: password
-  });
+  <!-- Load reCAPTCHA v3 API -->
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
-  if (error) {
-    document.getElementById("message").innerHTML = `<div class="alert alert-danger">${error.message}</div>`;
-    return;
-  }
+  <!-- Supabase setup (replace with your details) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script>
+    const supabaseUrl = "YOUR_SUPABASE_URL";
+    const supabaseKey = "YOUR_SUPABASE_ANON_KEY";
+    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-  const user = data.user;
+    // reCAPTCHA callback
+    async function onSubmit(token) {
+      const email = document.getElementById("loginEmail").value;
+      const password = document.getElementById("loginPassword").value;
 
-  // 2. Upload ID card
-  let idCardUrl = "";
-  if (idCardFile) {
-    const { data: uploadData, error: uploadError } = await supabase.storage
-      .from("id-cards")  // make sure you created this bucket
-      .upload(`cards/${user.id}_${idCardFile.name}`, idCardFile, { upsert: true });
-
-    if (uploadError) {
-      console.error("Upload error:", uploadError);
-    } else {
-      const { data: publicUrl } = supabase.storage.from("id-cards").getPublicUrl(uploadData.path);
-      idCardUrl = publicUrl.publicUrl;
+      // Proceed with Supabase login only if captcha succeeds
+      if (token) {
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) {
+          alert(error.message);
+        } else {
+          window.location.href = "dashboard.html"; // redirect after login
+        }
+      } else {
+        alert("Captcha verification failed, please try again.");
+      }
     }
-  }
-
-  // 3. Save user profile
-  const { error: profileError } = await supabase.from("profiles").insert([{
-    id: user.id,
-    full_name: fullName,
-    institution,
-    department,
-    role,
-    student_id: studentId,
-    telegram,
-    interest,
-    id_card_url: idCardUrl
-  }]);
-
-  if (profileError) {
-    console.error(profileError);
-  }
-
-  document.getElementById("message").innerHTML = `
-    <div class="alert alert-success">
-      Registration successful! Please check your email to verify your account before logging in.
-    </div>`;
-});
+  </script>
+</body>
+</html>
