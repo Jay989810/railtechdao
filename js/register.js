@@ -32,7 +32,7 @@ document.getElementById("regForm").addEventListener("submit", async (e) => {
 
   try {
     // 1. Upload ID card image to Supabase Storage
-    const filePath = `id_cards/${Date.now()}_${idCardFile.name}`;
+    const filePath = `id-cards/${Date.now()}_${idCardFile.name}`;
     let { data: storageData, error: storageError } = await supabaseClient.storage
       .from("id-cards")
       .upload(filePath, idCardFile);
