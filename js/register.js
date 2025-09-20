@@ -1,6 +1,6 @@
 // Supabase credentials
-const supabaseUrl = "https://ooxxampqveibgzonglxz.supabase.co";
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9veHhhbXBxdmVpYmd6b25nbHh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc5NTUzNjYsImV4cCI6MjA3MzUzMTM2Nn0.9QrAmTBPiDbVuyLQbmdxwf-LCgDoxT8zmLzowTq7oKA";
+const supabaseUrl = "https://lnbtbawdcfsbfgvamady.supabase.co";
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxuYnRiYXdkY2ZzYmZndmFtYWR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgzNjcwMDgsImV4cCI6MjA3Mzk0MzAwOH0.usAfqfD8J7sQLPxLvEmXC2XIcK0J8zN3_SgLaWxYjRI";
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
 document.getElementById("regForm").addEventListener("submit", async (e) => {
