@@ -14,7 +14,7 @@ document.getElementById("regForm").addEventListener("submit", async (e) => {
   }
 
   // Collect form values
-  const fullName = document.getElementById("full_Name").value;
+  const fullName = document.getElementById("full_name").value;
   const email = document.getElementById("email").value;
   const institution = document.getElementById("institution").value;
   const department = document.getElementById("department").value;
