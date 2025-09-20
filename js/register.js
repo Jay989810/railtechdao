@@ -1,6 +1,6 @@
 // Supabase credentials
 const supabaseUrl = "https://lnbtbawdcfsbfgvamady.supabase.co";
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxuYnRiYXdkY2ZzYmZndmFtYWR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgzNjcwMDgsImV4cCI6MjA3Mzk0MzAwOH0.usAfqfD8J7sQLPxLvEmXC2XIcK0J8zN3_SgLaWxYjRI"; // replace with anon/public key
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxuYnRiYXdkY2ZzYmZndmFtYWR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgzNjcwMDgsImV4cCI6MjA3Mzk0MzAwOH0.usAfqfD8J7sQLPxLvEmXC2XIcK0J8zN3_SgLaWxYjRI"; 
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -13,11 +13,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   form.addEventListener("submit", async (e) => {
-    e.preventDefault(); // stop form reload
+    e.preventDefault(); 
     console.log("📌 Form submitted, starting registration...");
 
     try {
-      // reCAPTCHA
+      // reCAPTCHA check
       if (typeof grecaptcha !== "undefined") {
         const captchaResponse = grecaptcha.getResponse();
         if (!captchaResponse) {
@@ -26,13 +26,13 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
 
-      // Collect fields
+      // Collect form values
       const full_name = document.getElementById("full_name").value.trim();
       const email = document.getElementById("email").value.trim();
       const institution = document.getElementById("institution").value.trim();
       const department = document.getElementById("department").value.trim();
       const role = document.getElementById("role").value;
-      const studentId = document.getElementById("studentId").value.trim();
+      const student_id = document.getElementById("studentId").value.trim();
       const telegram = document.getElementById("telegram").value.trim();
       const interest = document.getElementById("interest").value;
       const consent = document.getElementById("consent").checked;
@@ -55,11 +55,13 @@ document.addEventListener("DOMContentLoaded", () => {
         .from("id-cards")
         .getPublicUrl(filePath);
 
-      const idCardUrl = publicUrlData.publicUrl;
+      const id_card_url = publicUrlData.publicUrl;
 
       console.log("✅ File uploaded, inserting row...");
+
+      // ✅ Use snake_case to match your table
       const { error } = await supabaseClient.from("registrations").insert([
-        { fullName, email, institution, department, role, studentId, telegram, interest, consent, idCardUrl },
+        { full_name, email, institution, department, role, student_id, telegram, interest, consent, id_card_url },
       ]);
 
       if (error) throw error;
