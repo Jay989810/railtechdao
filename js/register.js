@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       // Collect fields
-      const fullName = document.getElementById("full_name").value.trim();
+      const full_name = document.getElementById("full_name").value.trim();
       const email = document.getElementById("email").value.trim();
       const institution = document.getElementById("institution").value.trim();
       const department = document.getElementById("department").value.trim();
