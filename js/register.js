@@ -6,15 +6,15 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 document.getElementById("regForm").addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  // reCAPTCHA check
+  // ✅ reCAPTCHA check
   const captchaResponse = grecaptcha.getResponse();
   if (!captchaResponse) {
     alert("⚠️ Please complete the CAPTCHA.");
     return;
   }
 
-  // Collect form values
-  const fullName = document.getElementById("full_name").value;
+  // ✅ Collect form values (match IDs in HTML)
+  const fullName = document.getElementById("fullName").value;
   const email = document.getElementById("email").value;
   const institution = document.getElementById("institution").value;
   const department = document.getElementById("department").value;
@@ -31,31 +31,42 @@ document.getElementById("regForm").addEventListener("submit", async (e) => {
   }
 
   try {
-    // 1. Upload ID card image to Supabase Storage
+    // ✅ 1. Upload ID card image to Supabase Storage
     const filePath = `id-cards/${Date.now()}_${idCardFile.name}`;
-    let { data: storageData, error: storageError } = await supabaseClient.storage
+    let { error: storageError } = await supabaseClient.storage
       .from("id-cards")
       .upload(filePath, idCardFile);
 
     if (storageError) throw storageError;
 
-    // 2. Get public URL of uploaded file
+    // ✅ 2. Get public URL of uploaded file
     const { data: publicUrlData } = supabaseClient.storage
       .from("id-cards")
       .getPublicUrl(filePath);
 
     const idCardUrl = publicUrlData.publicUrl;
 
-    // 3. Save registration details in Supabase table
-    const { data, error } = await supabaseClient
+    // ✅ 3. Save registration details in Supabase table (snake_case keys!)
+    const { error } = await supabaseClient
       .from("registrations")
       .insert([
-        { fullName, email, institution, department, role, studentId, telegram, interest, consent, idCardUrl }
+        { 
+          full_name: fullName,
+          email: email,
+          institution: institution,
+          department: department,
+          role: role,
+          student_id: studentId,
+          telegram: telegram,
+          interest: interest,
+          consent: consent,
+          id_card_url: idCardUrl
+        }
       ]);
 
     if (error) throw error;
 
-    // 4. Show success message
+    // ✅ 4. Show success message
     document.getElementById("regForm").style.display = "none";
     document.getElementById("libraryAccess").style.display = "block";
 
