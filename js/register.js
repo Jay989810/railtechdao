@@ -70,6 +70,26 @@ document.addEventListener("DOMContentLoaded", () => {
       form.style.display = "none";
       document.getElementById("libraryAccess").style.display = "block";
       console.log("🎉 Registration success!");
+
+      // ======================
+      // 🚀 Send Welcome Email
+      // ======================
+      emailjs.init("sd65VDZVJ5iFCExv5"); // replace with your EmailJS Public Key
+
+      const templateParams = {
+        full_name: full_name,
+        email: email,
+        drive_link: "https://drive.google.com/drive/folders/1-0UUvAHiF6z7BbTZBdG_7V_zzXvWcCY6"
+      };
+
+      emailjs.send("service_3b1sfci", "template_qnd7cve", templateParams)
+        .then(() => {
+          console.log("📧 Welcome email sent successfully!");
+        })
+        .catch((err) => {
+          console.error("❌ Failed to send email:", err);
+        });
+
     } catch (err) {
       alert("❌ Error: " + err.message);
       console.error("Registration failed:", err);
